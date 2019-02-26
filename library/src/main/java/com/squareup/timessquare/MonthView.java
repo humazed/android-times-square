@@ -61,7 +61,7 @@ public class MonthView extends LinearLayout {
       view.setDayBackground(dayBackgroundResId);
     }
 
-    view.isRtl = isRtl(locale);
+    view.isRtl = false;
     view.locale = locale;
     view.alwaysDigitNumbers = showAlwaysDigitNumbers;
     int firstDayOfWeek = today.getFirstDayOfWeek();
