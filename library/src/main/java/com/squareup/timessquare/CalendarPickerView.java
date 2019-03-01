@@ -8,6 +8,7 @@ import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,6 +105,7 @@ public class CalendarPickerView extends ListView {
   private CellClickInterceptor cellClickInterceptor;
   private List<CalendarCellDecorator> decorators;
   private DayViewAdapter dayViewAdapter = new DefaultDayViewAdapter();
+  private OnMonthChangeListener onMonthChangeListener;
 
   private boolean monthsReverseOrder;
 
@@ -206,6 +208,7 @@ public class CalendarPickerView extends ListView {
     // Make sure that all calendar instances use the same time zone and locale.
     this.timeZone = timeZone;
     this.locale = locale;
+    this.onMonthChangeListener = onMonthChangeListener;
     today = Calendar.getInstance(timeZone, locale);
     minCal = Calendar.getInstance(timeZone, locale);
     maxCal = Calendar.getInstance(timeZone, locale);
@@ -401,6 +404,11 @@ public class CalendarPickerView extends ListView {
 
     public FluentInitializer withMonthsReverseOrder(boolean monthsRevOrder) {
       monthsReverseOrder = monthsRevOrder;
+      return this;
+    }
+
+    public FluentInitializer onOnMonthChangeListener(OnMonthChangeListener onMonthChange) {
+      onMonthChangeListener = onMonthChange;
       return this;
     }
   }
@@ -917,8 +925,10 @@ public class CalendarPickerView extends ListView {
       if (monthsReverseOrder) {
         position = months.size() - position - 1;
       }
-      monthView.init(months.get(position), cells.getValueAtIndex(position), displayOnly,
-          titleTypeface, dateTypeface);
+      MonthDescriptor month = months.get(position);
+      monthView.init(month, cells.getValueAtIndex(position), displayOnly, titleTypeface, dateTypeface);
+
+      if (onMonthChangeListener != null) onMonthChangeListener.onMonthChange(month.getDate());
       return monthView;
     }
   }
@@ -1122,5 +1132,9 @@ public class CalendarPickerView extends ListView {
               fullDateFormat.format(maxCal.getTime()));
       Toast.makeText(getContext(), errMessage, Toast.LENGTH_SHORT).show();
     }
+  }
+
+  public interface OnMonthChangeListener {
+    void onMonthChange(Date date);
   }
 }

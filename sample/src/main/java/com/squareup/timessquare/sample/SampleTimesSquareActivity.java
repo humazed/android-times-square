@@ -46,7 +46,12 @@ public class SampleTimesSquareActivity extends Activity {
     calendar = (CalendarPickerView) findViewById(R.id.calendar_view);
     calendar.init(lastYear.getTime(), nextYear.getTime()) //
         .inMode(SelectionMode.SINGLE) //
-        .withSelectedDate(new Date());
+        .withSelectedDate(new Date())
+        .onOnMonthChangeListener(new CalendarPickerView.OnMonthChangeListener() {
+            @Override public void onMonthChange(Date date) {
+                Log.d(TAG, "onMonthChange() called with: date = [" + date + "]");
+            }
+        });
 
     initButtonListeners(nextYear, lastYear);
   }
@@ -167,7 +172,7 @@ public class SampleTimesSquareActivity extends Activity {
         setButtonsEnabled(decorator);
 
         calendar.setCustomDayView(new DefaultDayViewAdapter());
-        calendar.setDecorators(Arrays.<CalendarCellDecorator>asList(new SampleDecorator()));
+        calendar.setDecorators(Collections.<CalendarCellDecorator>singletonList(new SampleDecorator()));
         calendar.init(lastYear.getTime(), nextYear.getTime()) //
             .inMode(SelectionMode.SINGLE) //
             .withSelectedDate(new Date());
